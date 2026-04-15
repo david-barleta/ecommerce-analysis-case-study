@@ -1,12 +1,12 @@
 /*
-DDL Script: This SQL script creates table in the bronze layer, dropping tables if they already exist.
+DDL Script: This SQL script creates table in the staging layer, dropping tables if they already exist.
 */
 
-IF OBJECT_ID('bronze.orders', 'U') IS NOT NULL
-	DROP TABLE bronze.orders;
+IF OBJECT_ID('stg.raw_orders', 'U') IS NOT NULL
+	DROP TABLE stg.raw_orders;
 GO
 
-CREATE TABLE bronze.orders (
+CREATE TABLE stg.raw_orders (
 	order_id NVARCHAR(50),
 	customer_id NVARCHAR(50),
 	order_status NVARCHAR(50),
@@ -18,11 +18,11 @@ CREATE TABLE bronze.orders (
 );
 GO
 
-IF OBJECT_ID('bronze.order_items', 'U') IS NOT NULL
-	DROP TABLE bronze.order_items;
+IF OBJECT_ID('stg.raw_order_items', 'U') IS NOT NULL
+	DROP TABLE stg.raw_order_items;
 GO
 
-CREATE TABLE bronze.order_items (
+CREATE TABLE stg.raw_order_items (
 	order_id NVARCHAR(50),
 	order_item_id INT,
 	product_id NVARCHAR(50),
@@ -33,11 +33,11 @@ CREATE TABLE bronze.order_items (
 );
 GO
 
-IF OBJECT_ID('bronze.order_payments', 'U') IS NOT NULL
-	DROP TABLE bronze.order_payments;
+IF OBJECT_ID('stg.raw_order_payments', 'U') IS NOT NULL
+	DROP TABLE stg.raw_order_payments;
 GO
 
-CREATE TABLE bronze.order_payments (
+CREATE TABLE stg.raw_order_payments (
 	order_id NVARCHAR(50),
 	payment_sequential INT,
 	payment_type NVARCHAR(50),
@@ -46,26 +46,26 @@ CREATE TABLE bronze.order_payments (
 );
 GO
 
-IF OBJECT_ID('bronze.order_reviews', 'U') IS NOT NULL
-	DROP TABLE bronze.order_reviews;
+IF OBJECT_ID('stg.raw_order_reviews', 'U') IS NOT NULL
+	DROP TABLE stg.raw_order_reviews;
 GO
 
-CREATE TABLE bronze.order_reviews (
+CREATE TABLE stg.raw_order_reviews (
 	review_id NVARCHAR(50),
 	order_id NVARCHAR(50),
 	review_score INT,
 	review_comment_title NVARCHAR(100),
 	review_comment_message NVARCHAR(500),
-	review_creation_date DATETIME2,
+	review_creation_date DATE,
 	review_answer_timestamp DATETIME2
 );
 GO
 
-IF OBJECT_ID('bronze.closed_deals', 'U') IS NOT NULL
-	DROP TABLE bronze.closed_deals;
+IF OBJECT_ID('stg.raw_closed_deals', 'U') IS NOT NULL
+	DROP TABLE stg.raw_closed_deals;
 GO
 
-CREATE TABLE bronze.closed_deals (
+CREATE TABLE stg.raw_closed_deals (
 	mql_id NVARCHAR(50),
 	seller_id NVARCHAR(50),
 	sdr_id NVARCHAR(50),
@@ -78,16 +78,16 @@ CREATE TABLE bronze.closed_deals (
 	has_gtin NVARCHAR(10),
 	average_stock NVARCHAR(50),
 	business_type NVARCHAR(50),
-	declared_product_catalog_size INT,
+	declared_product_catalog_size DECIMAL(10, 1),
 	declared_monthly_revenue DECIMAL(15, 2)
 );
 GO
 
-IF OBJECT_ID('bronze.marketing_qualified_leads', 'U') IS NOT NULL
-	DROP TABLE bronze.marketing_qualified_leads;
+IF OBJECT_ID('stg.raw_marketing_qualified_leads', 'U') IS NOT NULL
+	DROP TABLE stg.raw_marketing_qualified_leads;
 GO
 
-CREATE TABLE bronze.marketing_qualified_leads (
+CREATE TABLE stg.raw_marketing_qualified_leads (
 	mql_id NVARCHAR(50),
 	first_contact_date DATE,
 	landing_page_id NVARCHAR(50),
@@ -95,11 +95,11 @@ CREATE TABLE bronze.marketing_qualified_leads (
 );
 GO
 
-IF OBJECT_ID('bronze.products', 'U') IS NOT NULL
-	DROP TABLE bronze.products;
+IF OBJECT_ID('stg.raw_products', 'U') IS NOT NULL
+	DROP TABLE stg.raw_products;
 GO
 
-CREATE TABLE bronze.products (
+CREATE TABLE stg.raw_products (
 	product_id NVARCHAR(50),
 	product_category_name NVARCHAR(50),
 	product_name_length INT,
@@ -112,11 +112,11 @@ CREATE TABLE bronze.products (
 );
 GO
 
-IF OBJECT_ID('bronze.customers', 'U') IS NOT NULL
-	DROP TABLE bronze.customers;
+IF OBJECT_ID('stg.raw_customers', 'U') IS NOT NULL
+	DROP TABLE stg.raw_customers;
 GO
 
-CREATE TABLE bronze.customers (
+CREATE TABLE stg.raw_customers (
 	customer_id NVARCHAR(50),
 	customer_unique_id NVARCHAR(50),
 	customer_zip_code_prefix NVARCHAR(10),
@@ -125,11 +125,11 @@ CREATE TABLE bronze.customers (
 );
 GO
 
-IF OBJECT_ID('bronze.sellers', 'U') IS NOT NULL
-	DROP TABLE bronze.sellers;
+IF OBJECT_ID('stg.raw_sellers', 'U') IS NOT NULL
+	DROP TABLE stg.raw_sellers;
 GO
 
-CREATE TABLE bronze.sellers (
+CREATE TABLE stg.raw_sellers (
 	seller_id NVARCHAR(50),
 	seller_zip_code_prefix NVARCHAR(10),
 	seller_city NVARCHAR(50),
@@ -137,11 +137,11 @@ CREATE TABLE bronze.sellers (
 );
 GO
 
-IF OBJECT_ID('bronze.geolocation', 'U') IS NOT NULL
-	DROP TABLE bronze.geolocation;
+IF OBJECT_ID('stg.raw_geolocation', 'U') IS NOT NULL
+	DROP TABLE stg.raw_geolocation;
 GO
 
-CREATE TABLE bronze.geolocation (
+CREATE TABLE stg.raw_geolocation (
 	geolocation_zip_code_prefix NVARCHAR(10),
 	geolocation_lat DECIMAL(22, 20),
 	geolocation_lng DECIMAL(19, 16),
@@ -150,11 +150,11 @@ CREATE TABLE bronze.geolocation (
 );
 GO
 
-IF OBJECT_ID('bronze.product_category_name_translations', 'U') IS NOT NULL
-	DROP TABLE bronze.product_category_name_translations;
+IF OBJECT_ID('stg.raw_product_category_name_translations', 'U') IS NOT NULL
+	DROP TABLE stg.raw_product_category_name_translations;
 GO
 
-CREATE TABLE bronze.product_category_name_translations (
+CREATE TABLE stg.raw_product_category_name_translations (
 	product_category_name NVARCHAR(100),
 	product_category_name_english NVARCHAR(100)
 );

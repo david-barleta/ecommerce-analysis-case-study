@@ -23,18 +23,15 @@ GO
 USE OlistDataWarehouse;
 GO
 
-CREATE SCHEMA bronze;
+CREATE SCHEMA stg;
 GO
 
-CREATE SCHEMA silver;
-GO
-
-CREATE SCHEMA gold;
+CREATE SCHEMA dwh;
 GO
 
 -- Check if the created schemas exist
 
 SELECT SCHEMA_NAME
 FROM INFORMATION_SCHEMA.SCHEMATA
-WHERE SCHEMA_NAME IN ('bronze', 'silver', 'gold');
+WHERE SCHEMA_NAME IN ('stg', 'dwh');
 GO
