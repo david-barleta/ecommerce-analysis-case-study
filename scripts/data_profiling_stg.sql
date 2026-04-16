@@ -109,7 +109,7 @@ HAVING COUNT(*) > 1;
 -- Check for NULLs in order_id
 SELECT COUNT(*) AS null_order_id_count
 FROM stg.raw_order_items
-WHERE product_id IS NULL;
+WHERE order_id IS NULL;
 
 -- Check for NULLs in product_id
 SELECT COUNT(*) AS null_product_id_count
@@ -145,7 +145,7 @@ SELECT COUNT(*) AS orphaned_seller_id_count
 FROM stg.raw_order_items AS i
 LEFT JOIN stg.raw_sellers AS s
 	ON i.seller_id = s.seller_id
-WHERE i.seller_id IS NULL;
+WHERE s.seller_id IS NULL;
 
 -- Check for invalid data in price
 SELECT COUNT(*) AS invalid_price_count
@@ -210,6 +210,38 @@ SELECT review_id, COUNT(*) AS duplicate_count
 FROM stg.raw_order_reviews
 GROUP BY review_id
 HAVING COUNT(*) > 1;
+
+-- Check if review_id duplicates are exact row duplicates
+SELECT
+	review_id,
+	order_id,
+	review_score,
+	review_comment_title,
+	review_comment_message,
+	review_creation_date,
+	review_answer_timestamp,
+	COUNT(*)
+FROM stg.raw_order_reviews
+GROUP BY
+	review_id,
+	order_id,
+	review_score,
+	review_comment_title,
+	review_comment_message,
+	review_creation_date,
+	review_answer_timestamp
+HAVING COUNT(*) > 1;
+
+-- Investigate differences between duplicate records
+SELECT *
+FROM stg.raw_order_reviews
+WHERE review_id IN (
+    SELECT review_id
+    FROM stg.raw_order_reviews
+    GROUP BY review_id
+    HAVING COUNT(*) > 1
+)
+ORDER BY review_id;
 
 -- Check for duplicates in order_id
 SELECT order_id, COUNT(*) AS duplicate_count
@@ -405,6 +437,13 @@ SELECT COUNT(*) AS invalid_monthly_revenue_count
 FROM stg.raw_closed_deals
 WHERE declared_monthly_revenue <= 0 OR declared_monthly_revenue IS NULL;
 
+-- Check for records where won_date is earlier than first_contact_date
+SELECT COUNT(*) AS invalid_date_sequence_count
+FROM stg.raw_closed_deals AS cd
+LEFT JOIN stg.raw_marketing_qualified_leads AS mql
+	ON cd.mql_id = mql.mql_id
+WHERE cd.won_date < mql.first_contact_date;
+
 -- ================================================== 
 
 -- Check data quality of stg.raw_products
@@ -569,9 +608,6 @@ WHERE g.geolocation_zip_code_prefix IS NULL;
 
 -- Check row count
 SELECT COUNT(*) AS row_count
-FROM stg.raw_geolocation;
-
-SELECT *
 FROM stg.raw_geolocation;
 
 -- Check for duplicates and NULLs in geolocation_zip_code_prefix

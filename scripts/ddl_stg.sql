@@ -1,5 +1,5 @@
 /*
-DDL Script: This SQL script creates table in the staging layer, dropping tables if they already exist.
+DDL Script: This SQL script creates tables in the staging layer, dropping tables if they already exist.
 */
 
 IF OBJECT_ID('stg.raw_orders', 'U') IS NOT NULL
@@ -61,6 +61,18 @@ CREATE TABLE stg.raw_order_reviews (
 );
 GO
 
+IF OBJECT_ID('stg.raw_marketing_qualified_leads', 'U') IS NOT NULL
+	DROP TABLE stg.raw_marketing_qualified_leads;
+GO
+
+CREATE TABLE stg.raw_marketing_qualified_leads (
+	mql_id NVARCHAR(50),
+	first_contact_date DATE,
+	landing_page_id NVARCHAR(50),
+	origin NVARCHAR(50)
+);
+GO
+
 IF OBJECT_ID('stg.raw_closed_deals', 'U') IS NOT NULL
 	DROP TABLE stg.raw_closed_deals;
 GO
@@ -80,18 +92,6 @@ CREATE TABLE stg.raw_closed_deals (
 	business_type NVARCHAR(50),
 	declared_product_catalog_size DECIMAL(10, 1),
 	declared_monthly_revenue DECIMAL(15, 2)
-);
-GO
-
-IF OBJECT_ID('stg.raw_marketing_qualified_leads', 'U') IS NOT NULL
-	DROP TABLE stg.raw_marketing_qualified_leads;
-GO
-
-CREATE TABLE stg.raw_marketing_qualified_leads (
-	mql_id NVARCHAR(50),
-	first_contact_date DATE,
-	landing_page_id NVARCHAR(50),
-	origin NVARCHAR(50)
 );
 GO
 
